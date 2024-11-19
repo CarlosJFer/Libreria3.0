@@ -1,11 +1,6 @@
-const http = require('http');
+const app = require("./src/app");
+require("dotenv").config();
 
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Primer servidor basico!\n');
-});
+const PORT = process.env.PORT || 3000;
 
-server.listen(3000, () => {
-    console.log('Servidor ejecutandose en http://localhost:3000');
-});
+app.listen(PORT, console.log(`Servidor escuchando en el puerto ${PORT}`));

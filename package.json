@@ -12,7 +12,7 @@
     "proyecto",
     "node"
   ],
-  "author": "Carlos Fernandez",
+  "author": "Carlos Fernandez, Benjamin Lopez, Reyes Hiroz Emilio",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^3.1.7"

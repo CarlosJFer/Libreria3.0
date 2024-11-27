@@ -6,7 +6,7 @@ const {
   getProductByTitleController,
   updateProductController,
   deleteProductController,
-} = require("../controllers/productsControllers");
+} = require("../controllers/productsControllersBen");
 
 const getAllProductsHandler = async (req, res) => {
   try {

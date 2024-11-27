@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 const mongoUrl =
   "mongodb+srv://benja248myn:Talentos2024@clustertest.hn4b5.mongodb.net/ecommerceDB";
@@ -16,3 +17,5 @@ db.once("open", () => {
 });
 
 module.exports = mongoose;
+
+

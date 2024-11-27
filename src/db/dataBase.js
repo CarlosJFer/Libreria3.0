@@ -1,9 +1,17 @@
-const users = [
-    { id: 1, name: 'John', username: 'Doe', email: 'carlosws@gmail.com' },
-    { id: 2, name: 'Jane', username: 'Doe', email: 'carlosws@gmail.com' },
-    { id: 3, name: 'Alice', username: 'Smith', email: 'carlosws@gmail.com' }
-];
+const mongoose = require("mongoose");
+const mongoUrl = "inserte URL";
 
-module.exports = users;
+mongoose.connect(mongoUrl);
 
+const db = mongoose.connection; //instanciamos nuestra base de datos
 
+//aplicamos metodos para debuggear
+
+//Verifica los cambios y mmuestra si existe error
+db.on("error", console.error.bind(console, "Connection error: "));
+
+db.once("open", () => {
+  console.log("Se ha conectado a MongoDB");
+});
+
+module.exports = mongoose;

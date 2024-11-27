@@ -11,7 +11,7 @@ const usersRouter = Router();
 
 usersRouter.get("/", getAllUsersHandler);
 usersRouter.get("/:id", getOneUserHandler);
-usersRouter.post("/", createUserHandler, validateUserData);
+usersRouter.post("/", validateUserData, createUserHandler);
 usersRouter.put("/:id", updateUserHandler);
 usersRouter.delete("/:id", deleteUserHandler);
 

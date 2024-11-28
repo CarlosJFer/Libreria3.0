@@ -1,53 +1,83 @@
-// Obtener todas las órdenes
-const getAllOrdersHandler = (req, res) => {
-    const { name } = req.query;
-    if (name) {
-        res.send(`Estos son los usuarios con el nombre ${name}`);
-    } else {
-        res.send("Estos son los usuarios");
+const {
+    createOrderController,
+    getAllOrdersController,
+    getOrderByIdController,
+    updateOrderController,
+    deleteOrderController,
+} = require("../controllers/orderController");
+const Joi = require('joi');
+
+const orderSchema = Joi.object({
+    userId: Joi.string().required(),
+    productId: Joi.string().required(),
+    quantity: Joi.number().min(1).required(),
+});
+
+const validateOrderData = (req, res, next) => {
+    const { error } = orderSchema.validate(req.body);
+    if (error) {
+        return res.status(400).send(`Error de validación: ${error.details[0].message}`);
+    }
+    next();
+};
+
+const getAllOrdersHandler = async (req, res) => {
+    try {
+        const response = await getAllOrdersController();
+        res.status(200).send(response);
+    } catch (error) {
+        console.error("Error al intentar obtener todas las órdenes:", error);
+        res.status(500).send({ Error: error.message });
     }
 };
 
-// Obtener una orden por ID
-const getOneOrderHandler = (req, res) => {
-    const { id } = req.params;
-    if (!id) {
-        return res.status(400).send("El ID es requerido");
+const getOneOrderHandler = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = await getOrderByIdController(id);
+        res.status(200).send(response);
+    } catch (error) {
+        console.error("Error al obtener la orden:", error);
+        res.status(404).send({ Error: error.message });
     }
-    res.send(`Este es el detalle de un usuario con id ${id}`);
 };
 
-// Crear una nueva orden
-const createOrderHandler = (req, res) => {
-    const { id, name, username, email } = req.body;
-    if (!id || !name || !username || !email) {
-        return res.status(400).send("Todos los campos son requeridos");
+const createOrderHandler = async (req, res) => {
+    try {
+        const { userId, productId, quantity } = req.body;
+        const response = await createOrderController(userId, productId, quantity);
+        res.status(201).send(response);
+    } catch (error) {
+        console.error("Error al crear la orden:", error);
+        res.status(500).send({ Error: error.message });
     }
-    console.log(id, name, username, email);
-    res.status(201).send(`El usuario con id ${id} y name ${name} fue creado con el username ${username} y su email es ${email}`);
 };
 
-// Actualizar una orden
-const updateOrderHandler = (req, res) => {
-    const { id } = req.params;
-    if (!id) {
-        return res.status(400).send("ID es requerido para actualizar");
+const updateOrderHandler = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId, productId, quantity } = req.body;
+        const response = await updateOrderController(id, userId, productId, quantity);
+        res.status(200).send(response);
+    } catch (error) {
+        console.error("Error al actualizar la orden:", error);
+        res.status(500).send({ Error: error.message });
     }
-    // Lógica para actualizar la orden
-    res.send("Modificando el usuario");
 };
 
-// Eliminar una orden
-const deleteOrderHandler = (req, res) => {
-    const { id } = req.params;
-    if (!id) {
-        return res.status(400).send("ID es requerido para eliminar");
+const deleteOrderHandler = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = await deleteOrderController(id);
+        res.status(200).send(response);
+    } catch (error) {
+        console.error("Error al eliminar la orden:", error);
+        res.status(500).send({ Error: error.message });
     }
-    // Lógica para eliminar la orden
-    res.send("Eliminando el usuario");
 };
 
 module.exports = {
+    validateOrderData,
     getAllOrdersHandler,
     getOneOrderHandler,
     createOrderHandler,

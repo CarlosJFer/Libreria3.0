@@ -1,12 +1,6 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
-const createOrderController = async (
-  idPedido,
-  fecha,
-  estado,
-  metodoPago,
-  items
-) => {
+const createOrderController = async (fecha, estado, metodoPago, items) => {
   let total = 0; // Inicializar el total en 0
 
   // Iterar sobre los ítems para calcular precios y validar existencia
@@ -26,7 +20,6 @@ const createOrderController = async (
 
   // Crear la nueva orden con los precios calculados
   const newOrder = await Order.create({
-    idPedido,
     fecha,
     estado,
     metodoPago,

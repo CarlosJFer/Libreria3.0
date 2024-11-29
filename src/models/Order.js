@@ -11,9 +11,12 @@ const itemSchema = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema({
-  idPedido: { type: Number, required: true },
   fecha: { type: Date, required: true },
-  estado: { type: String, required: true, maxlength: 50 },
+  estado: {
+    type: String,
+    enum: ["Pendiente", "Cancelado", "Aceptado"],
+    default: "Pendiente",
+  },
   metodoPago: {
     type: String,
     required: true,

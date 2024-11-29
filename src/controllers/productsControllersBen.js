@@ -7,7 +7,8 @@ const createProductController = async (
   editorial,
   genero,
   descripcion,
-  imgPortada
+  imgPortada,
+  precio
 ) => {
   const newProduct = Product.create({
     ISBN,
@@ -17,6 +18,7 @@ const createProductController = async (
     genero,
     descripcion,
     imgPortada,
+    precio,
   });
   return newProduct;
 };

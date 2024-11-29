@@ -36,8 +36,16 @@ const getOneProductHandler = async (req, res) => {
 
 const createProductHandler = async (req, res) => {
   try {
-    const { ISBN, titulo, autor, editorial, genero, descripcion, imgPortada } =
-      req.body;
+    const {
+      ISBN,
+      titulo,
+      autor,
+      editorial,
+      genero,
+      descripcion,
+      imgPortada,
+      precio,
+    } = req.body;
     const response = await createProductController(
       ISBN,
       titulo,
@@ -45,7 +53,8 @@ const createProductHandler = async (req, res) => {
       editorial,
       genero,
       descripcion,
-      imgPortada
+      imgPortada,
+      precio
     );
     res.send(response);
   } catch (error) {

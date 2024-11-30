@@ -31,4 +31,44 @@ const createReceiptController = async (idPedido, detalles) => {
   return newReceipt;
 };
 
-module.exports = { createReceiptController };
+const getAllReceiptsController = async () => {
+  return await Receipt.find();
+};
+
+const getOneReceiptController = async (id) => {
+  const receipt = await Receipt.findById(id);
+  if (!receipt) {
+    throw new Error(`El recibo con id ${id} no existe en la base de datos`);
+  }
+  return receipt;
+};
+
+//Solo cambia los detalles
+const updateReceiptController = async (id, detalles) => {
+  const receipt = await Receipt.findById(id);
+  if (!receipt) {
+    throw new Error(`El recibo con id ${id} no existe en la base de datos`);
+  }
+  idPedido = receipt.idPedido;
+  const newReceipt = { idPedido, detalles };
+  const updateReceipt = await Receipt.findByIdAndUpdate(id, newReceipt, {
+    new: true,
+  });
+  return updateReceipt;
+};
+
+const deleteReceiptController = async (id) => {
+  let deleteReceipt = await Receipt.findByIdAndDelete(id);
+  if (!deleteReceipt) {
+    throw new Error(`El recibo con id ${id} no existe en la base de datos`);
+  }
+  return deleteReceipt;
+};
+
+module.exports = {
+  createReceiptController,
+  getAllReceiptsController,
+  getOneReceiptController,
+  updateReceiptController,
+  deleteReceiptController,
+};

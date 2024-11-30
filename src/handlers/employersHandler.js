@@ -25,12 +25,6 @@ const createEmployerHandler = async (req, res) => {
 
 // Obtener todos los empleados
 const getAllEmployersHandler = async (req, res) => {
-  /*const { name } = req.query;
-  if (name) {
-    res.send(`Estos son los empleados con el nombre ${name}`);
-  } else {
-    res.send("Estos son los empleados");
-  }*/
   try {
     const response = await getAllEmployersController();
     res.send(response);

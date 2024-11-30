@@ -1,5 +1,12 @@
 const Joi = require("joi");
-const { createReceiptController } = require("../controllers/receiptController");
+const {
+  createReceiptController,
+  getAllReceiptsController,
+  getOneReceiptController,
+  updateReceiptController,
+  deleteReceiptController,
+} = require("../controllers/receiptController");
+const { response } = require("express");
 
 const receiptSchema = Joi.object({
   idPedido: Joi.string().required(),
@@ -20,42 +27,64 @@ const createReceiptHandler = async (req, res) => {
 };
 
 // Obtener todos los recibos
-const getAllReceiptsHandler = (req, res) => {
-  const { name } = req.query;
-  if (name) {
-    res.send(`Estos son los usuarios con el nombre ${name}`);
-  } else {
-    res.send("Estos son los usuarios");
+const getAllReceiptsHandler = async (req, res) => {
+  try {
+    const response = await getAllReceiptsController();
+    res.send(response);
+  } catch (error) {
+    res.status(500).send({ Error: error.message });
   }
 };
 
 // Obtener un recibo por ID
-const getOneReceiptHandler = (req, res) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.status(400).send("El ID es requerido");
+const getOneReceiptHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).send("El ID es requerido");
+    }
+    const response = await getOneReceiptController(id);
+    res.send(response);
+  } catch (error) {
+    res.status(500).send({ Error: error.message });
   }
-  res.send(`Este es el detalle de un usuario con id ${id}`);
 };
 
 // Actualizar un recibo
-const updateReceiptHandler = (req, res) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.status(400).send("ID es requerido para actualizar");
+//se podría actualizar solo detalles
+const updateReceiptHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { detalles } = req.body;
+    if (!id) {
+      return res.status(400).send("ID es requerido para actualizar");
+    }
+    // Lógica para actualizar el recibo
+    const response = await updateReceiptController(id, detalles);
+    res.send(response);
+  } catch (error) {
+    res.status(500).send({ Error: error.message });
   }
-  // Lógica para actualizar el recibo
-  res.send("Modificando el usuario");
 };
 
 // Eliminar un recibo
-const deleteReceiptHandler = (req, res) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.status(400).send("ID es requerido para eliminar");
+const deleteReceiptHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).send("ID es requerido para eliminar");
+    }
+    // Lógica para eliminar el recibo
+    const response = await deleteReceiptController(id);
+    if (!response) {
+      return res
+        .status(404)
+        .send({ error: `El recibo con id ${id} no existe` });
+    }
+    res.send(response);
+  } catch (error) {
+    res.status(500).send({ Error: error.message });
   }
-  // Lógica para eliminar el recibo
-  res.send("Eliminando el usuario");
 };
 
 module.exports = {

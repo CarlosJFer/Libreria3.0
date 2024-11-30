@@ -11,7 +11,7 @@ const itemSchema = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema({
-  fecha: { type: Date, required: true },
+  fecha: { type: Date },
   estado: {
     type: String,
     enum: ["Pendiente", "Cancelado", "Aceptado"],

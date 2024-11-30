@@ -20,7 +20,7 @@ const createOrderController = async (fecha, estado, metodoPago, items) => {
 
   // Crear la nueva orden con los precios calculados
   const newOrder = await Order.create({
-    fecha,
+    fecha: new Date(),
     estado,
     metodoPago,
     items,

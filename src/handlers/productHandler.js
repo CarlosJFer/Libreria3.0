@@ -77,6 +77,11 @@ const updateProductHandler = async (req, res) => {
       descripcion,
       imgPortada
     );
+    if (!response) {
+      return res
+        .status(404)
+        .send({ error: `El producto con id ${id} no existe` });
+    }
     res.send(response);
   } catch (error) {
     res.status(500).send({ Error: error.message });
@@ -86,7 +91,12 @@ const updateProductHandler = async (req, res) => {
 const deleteProductHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const response = deleteProductController(id);
+    const response = await deleteProductController(id);
+    if (!response) {
+      return res
+        .status(404)
+        .send({ error: `El producto con id ${id} no existe` });
+    }
     res.send(response);
   } catch (error) {
     res.status(500).send({ Error: error.message });

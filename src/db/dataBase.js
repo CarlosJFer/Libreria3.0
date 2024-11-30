@@ -1,17 +1,15 @@
 const mongoose = require("mongoose");
-const mongoUrl = "inserte URL";
+require("dotenv").config();
 
-mongoose.connect(mongoUrl);
+const mongoUrl = process.env.MONGO_URL;
 
-const db = mongoose.connection; //instanciamos nuestra base de datos
-
-//aplicamos metodos para debuggear
-
-//Verifica los cambios y mmuestra si existe error
-db.on("error", console.error.bind(console, "Connection error: "));
-
-db.once("open", () => {
-  console.log("Se ha conectado a MongoDB");
-});
+mongoose
+  .connect(mongoUrl)
+  .then(() => {
+    console.log("Se ha conectado a MongoDB");
+  })
+  .catch((err) => {
+    console.error("Error al conectar a MongoDB:", err);
+  });
 
 module.exports = mongoose;

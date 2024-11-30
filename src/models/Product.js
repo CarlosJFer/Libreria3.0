@@ -26,6 +26,7 @@ const productShema = new mongoose.Schema({
   genero: { type: String, required: true },
   descripcion: { type: String },
   imgPortada: { type: String },
+  precio: { type: Number, required: true },
 });
 
 //Modelo

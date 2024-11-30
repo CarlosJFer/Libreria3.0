@@ -40,10 +40,27 @@ const getOrderByIdController = async (id) => {
   return order;
 };
 
-const updateOrderController = async (id, userId, productId, quantity) => {
+const updateOrderController = async (id, fecha, estado, metodoPago, items) => {
+  let total = 0; // Inicializar el total en 0
+
+  // Iterar sobre los ítems para calcular precios y validar existencia
+  for (const item of items) {
+    const product = await Product.findById(item.productId); // Buscar el producto en la base de datos
+    if (!product) {
+      throw new Error(
+        `El producto con _id ${item.productId} no existe en la base de datos`
+      );
+    }
+
+    // Calcular el precio total del ítem: cantidad * precio del producto
+    const itemPrice = parseFloat(product.precio.toString()) * item.cantidad;
+    item.precio = itemPrice.toFixed(2); // Actualizar el precio del ítem
+    total += itemPrice; // Acumular el total de la orden
+  }
+
   const updatedOrder = await Order.findByIdAndUpdate(
     id,
-    { userId, productId, quantity },
+    { fecha, estado, metodoPago, items, total },
     { new: true }
   );
   if (!updatedOrder) throw new Error("Error: Orden no encontrada");

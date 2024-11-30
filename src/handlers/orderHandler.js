@@ -8,7 +8,7 @@ const {
 const Joi = require("joi");
 
 const orderSchema = Joi.object({
-  fecha: Joi.date().required(),
+  fecha: Joi.date(),
   estado: Joi.string().max(50),
   metodoPago: Joi.string()
     .valid("Tarjeta de Crédito", "Débito", "Transferencia Bancaria")
@@ -81,12 +81,13 @@ const createOrderHandler = async (req, res) => {
 const updateOrderHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId, productId, quantity } = req.body;
+    const { fecha, estado, metodoPago, items } = req.body;
     const response = await updateOrderController(
       id,
-      userId,
-      productId,
-      quantity
+      fecha,
+      estado,
+      metodoPago,
+      items
     );
     res.status(200).send(response);
   } catch (error) {

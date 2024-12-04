@@ -4,13 +4,21 @@ const { createUserController,
     getUserByIdController,
     updateUserController,
     deleteUserController } = require("../controllers/userController");
-
 const Joi = require('joi');
+
+// const userSchema = Joi.object({
+//     name: Joi.string().min(3).required(),
+//     username: Joi.string().min(3).required(),
+//     email: Joi.string().min(5).required().email(),
+// })
 const userSchema = Joi.object({
     name: Joi.string().min(3).required(),
     username: Joi.string().min(3).required(),
-    email: Joi.string().min(5).required().email(),
-})
+    email: Joi.string().email().required(),
+    password: Joi.string().pattern(/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/). required(),
+    role: Joi.string().valid( 'admin', 'user').required(),
+  });
+
 
 const validateUserData = (req, res, next) => {
     const { error } = userSchema.validate(req.body);
@@ -70,7 +78,7 @@ const createUserHandler = async (req, res) => {
         }
 
         const { name, username, email } = req.body;
-        const response = await createUserController(name, username, email);
+        const response = await createUserController(name, username, email,password, role);//Se añade pasword y role
         res.status(201).send(response);
     } catch (error) {
         console.error("Error al crear el usuario:", error);

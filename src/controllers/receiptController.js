@@ -2,8 +2,7 @@ const Receipt = require("../models/Receipt");
 const Order = require("../models/Order");
 
 const createReceiptController = async (idPedido, detalles) => {
-  // Verificar que el pedido exista
-  const order = await Order.findById(idPedido);
+  const order = await Order.findById(idPedido);   // Verificar que la orden exista
   if (!order) {
     throw new Error(
       `El pedido con id ${idPedido} no existe en la base de datos`
@@ -15,11 +14,11 @@ const createReceiptController = async (idPedido, detalles) => {
   if (order.estado === "Pendiente") {
     throw new Error(`El pedido con id ${idPedido} todavía esta pendiente`);
   }
-  // Obtener el metodoPago desde el pedido
-  const metodoPago = order.metodoPago;
-  // Calcular el total sumando los subtotales de los ítems
-  const total = parseFloat(order.total.toString());
-  // Crear el recibo
+
+  const metodoPago = order.metodoPago;   // Obtener el metodoPago desde el pedido
+
+  const total = parseFloat(order.total.toString());  // Calcular el total sumando los subtotales de los ítems
+
   const newReceipt = await Receipt.create({
     idPedido,
     fechaEmision: new Date(),

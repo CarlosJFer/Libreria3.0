@@ -1,6 +1,6 @@
 const Employee = require("../models/Employee");
 
-const createEmployerController = async (
+const createEmployeeController = async (
   firstName,
   lastName,
   position,
@@ -17,15 +17,15 @@ const createEmployerController = async (
   return newEmployee;
 };
 
-const getAllEmployersController = async () => {
+const getAllEmployeesController = async () => {
   return await Employee.find();
 };
 
-const getOneEmployersController = async (id) => {
+const getOneEmployeesController = async (id) => {
   return await Employee.findById(id);
 };
 
-const updateEmployersController = async (
+const updateEmployeesController = async (
   id,
   firstName,
   lastName,
@@ -43,18 +43,18 @@ const updateEmployersController = async (
   return updateEmployee;
 };
 
-const deleteEmployerController = async (id) => {
-  let deleteEmployer = await Employee.findByIdAndDelete(id);
-  if (!deleteEmployer) {
+const deleteEmployeeController = async (id) => {
+  let deleteEmployee = await Employee.findByIdAndDelete(id);
+  if (!deleteEmployee) {
     throw new Error(`El producto con id ${id} no existe en la base de datos`);
   }
-  return deleteEmployer;
+  return deleteEmployee;
 };
 
 module.exports = {
-  createEmployerController,
-  getAllEmployersController,
-  getOneEmployersController,
-  updateEmployersController,
-  deleteEmployerController,
+  createEmployeeController,
+  getAllEmployeesController,
+  getOneEmployeesController,
+  updateEmployeesController,
+  deleteEmployeeController,
 };

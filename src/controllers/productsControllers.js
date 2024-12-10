@@ -25,7 +25,6 @@ const createProductController = async (
 
 const getAllProductsController = async () => {
   return await Product.find();
-  //.populate({path:"userId", select:"name -_id"})
 };
 
 const getProductByIdController = async (id) => {

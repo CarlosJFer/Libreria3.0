@@ -1,16 +1,15 @@
 const {
-  createEmployerController,
-  getAllEmployersController,
-  getOneEmployersController,
-  updateEmployersController,
-  deleteEmployerController,
-} = require("../controllers/employerController");
+  createEmployeeController,
+  getAllEmployeesController,
+  getOneEmployeesController,
+  updateEmployeesController,
+  deleteEmployeeController,
+} = require("../controllers/employeeController");
 
-// Crear un nuevo empleado
-const createEmployerHandler = async (req, res) => {
+const createEmployeeHandler = async (req, res) => {
   try {
     const { firstName, lastName, position, email, phone } = req.body;
-    const response = await createEmployerController(
+    const response = await createEmployeeController(
       firstName,
       lastName,
       position,
@@ -23,41 +22,37 @@ const createEmployerHandler = async (req, res) => {
   }
 };
 
-// Obtener todos los empleados
-const getAllEmployersHandler = async (req, res) => {
+const getAllEmployeesHandler = async (req, res) => {
   try {
-    const response = await getAllEmployersController();
+    const response = await getAllEmployeesController();
     res.send(response);
   } catch (error) {
     res.status(418).send({ Error: error.message });
   }
 };
 
-// Obtener un empleado por ID
-const getOneEmployersHandler = async (req, res) => {
+const getOneEmployeesHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
     if (!id) {
       return res.status(400).send("El ID es requerido");
     }
-    const response = await getOneEmployersController(id);
+    const response = await getOneEmployeesController(id);
     res.send(response);
   } catch (error) {
     res.status(500).send({ Error: error.message });
   }
 };
 
-// Actualizar un empleado
-const updateEmployersHandler = async (req, res) => {
+const updateEmployeesHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const { firstName, lastName, position, email, phone } = req.body;
     if (!id) {
       return res.status(400).send("ID es requerido para actualizar");
     }
-    // Lógica para actualizar el empleado
-    const response = await updateEmployersController(
+    const response = await updateEmployeesController(
       id,
       firstName,
       lastName,
@@ -72,14 +67,13 @@ const updateEmployersHandler = async (req, res) => {
   }
 };
 
-// Eliminar un empleado
-const deleteEmployersHandler = async (req, res) => {
+const deleteEmployeesHandler = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
       return res.status(400).send("ID es requerido para eliminar");
     }
-    const response = await deleteEmployerController(id);
+    const response = await deleteEmployeeController(id);
     if (!response) {
       return res
         .status(404)
@@ -93,9 +87,9 @@ const deleteEmployersHandler = async (req, res) => {
 };
 
 module.exports = {
-  createEmployerHandler,
-  getAllEmployersHandler,
-  getOneEmployersHandler,
-  updateEmployersHandler,
-  deleteEmployersHandler,
+  createEmployeeHandler,
+  getAllEmployeesHandler,
+  getOneEmployeesHandler,
+  updateEmployeesHandler,
+  deleteEmployeesHandler,
 };

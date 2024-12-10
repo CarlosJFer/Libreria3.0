@@ -25,16 +25,6 @@ const orderSchema = Joi.object({
   total: Joi.number().precision(2).allow(null), // Puede venir nulo
 });
 
-/*const validateOrderData = (req, res, next) => {
-  const { error } = orderSchema.validate(req.body);
-  if (error) {
-    return res
-      .status(400)
-      .send(`Error de validación: ${error.details[0].message}`);
-  }
-  next();
-};*/
-
 const getAllOrdersHandler = async (req, res) => {
   try {
     const response = await getAllOrdersController();
@@ -56,7 +46,6 @@ const getOneOrderHandler = async (req, res) => {
   }
 };
 
-// Crear un nuevo pedido (order)
 const createOrderHandler = async (req, res) => {
   const { error } = orderSchema.validate(req.body);
   if (error) {
@@ -73,7 +62,6 @@ const createOrderHandler = async (req, res) => {
     );
     res.send(response);
   } catch (error) {
-    //console.error("Error al crear la orden:", error);
     res.status(500).send({ Error: error.message });
   }
 };
@@ -108,7 +96,6 @@ const deleteOrderHandler = async (req, res) => {
 };
 
 module.exports = {
-  //validateOrderData,
   getAllOrdersHandler,
   getOneOrderHandler,
   createOrderHandler,

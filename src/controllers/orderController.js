@@ -1,21 +1,22 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+
 const createOrderController = async (fecha, estado, metodoPago, items) => {
-  let total = 0; // Inicializar el total en 0
+  let total = 0;
 
   // Iterar sobre los ítems para calcular precios y validar existencia
   for (const item of items) {
     const product = await Product.findById(item.productId); // Buscar el producto en la base de datos
     if (!product) {
       throw new Error(
-        `El producto con _id ${item.productId} no existe en la base de datos`
+        `El producto con id ${item.productId} no existe en la base de datos`
       );
     }
 
-    // Calcular el precio total del ítem: cantidad * precio del producto
+    // Calcula el precio total del ítem: cantidad * precio del producto
     const itemPrice = parseFloat(product.precio.toString()) * item.cantidad;
-    item.precio = itemPrice.toFixed(2); // Actualizar el precio del ítem
-    total += itemPrice; // Acumular el total de la orden
+    item.precio = itemPrice.toFixed(2); // Actualiza el precio del ítem
+    total += itemPrice; // Acumula el total de la orden
   }
 
   // Crear la nueva orden con los precios calculados
@@ -41,21 +42,19 @@ const getOrderByIdController = async (id) => {
 };
 
 const updateOrderController = async (id, fecha, estado, metodoPago, items) => {
-  let total = 0; // Inicializar el total en 0
+  let total = 0;
 
-  // Iterar sobre los ítems para calcular precios y validar existencia
   for (const item of items) {
-    const product = await Product.findById(item.productId); // Buscar el producto en la base de datos
+    const product = await Product.findById(item.productId);
     if (!product) {
       throw new Error(
-        `El producto con _id ${item.productId} no existe en la base de datos`
+        `El producto con id ${item.productId} no existe en la base de datos`
       );
     }
 
-    // Calcular el precio total del ítem: cantidad * precio del producto
     const itemPrice = parseFloat(product.precio.toString()) * item.cantidad;
-    item.precio = itemPrice.toFixed(2); // Actualizar el precio del ítem
-    total += itemPrice; // Acumular el total de la orden
+    item.precio = itemPrice.toFixed(2);
+    total += itemPrice;
   }
 
   const updatedOrder = await Order.findByIdAndUpdate(

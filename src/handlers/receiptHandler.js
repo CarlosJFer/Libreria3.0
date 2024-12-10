@@ -26,7 +26,6 @@ const createReceiptHandler = async (req, res) => {
   }
 };
 
-// Obtener todos los recibos
 const getAllReceiptsHandler = async (req, res) => {
   try {
     const response = await getAllReceiptsController();
@@ -36,7 +35,6 @@ const getAllReceiptsHandler = async (req, res) => {
   }
 };
 
-// Obtener un recibo por ID
 const getOneReceiptHandler = async (req, res) => {
   try {
     const { id } = req.params;
@@ -50,7 +48,6 @@ const getOneReceiptHandler = async (req, res) => {
   }
 };
 
-// Actualizar un recibo
 //se podría actualizar solo detalles
 const updateReceiptHandler = async (req, res) => {
   try {
@@ -59,7 +56,6 @@ const updateReceiptHandler = async (req, res) => {
     if (!id) {
       return res.status(400).send("ID es requerido para actualizar");
     }
-    // Lógica para actualizar el recibo
     const response = await updateReceiptController(id, detalles);
     res.send(response);
   } catch (error) {
@@ -67,14 +63,12 @@ const updateReceiptHandler = async (req, res) => {
   }
 };
 
-// Eliminar un recibo
 const deleteReceiptHandler = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
       return res.status(400).send("ID es requerido para eliminar");
     }
-    // Lógica para eliminar el recibo
     const response = await deleteReceiptController(id);
     if (!response) {
       return res

@@ -7,15 +7,15 @@ const {
     deleteUserHandler,
     validateUserData,
 } = require("../handlers/userHandler");
-//se agrega rutas a los middlewares
-const verifyToken = require("../middleware/authMiddleware");//se agrega rutas a los middlewares
-const authorizeAdmin = require("../middleware/authAdmin");
+
+const verifyToken = require("../middleware/verifyMiddleware");
+const authorizeAdmin = require("../middleware/authMiddleware");
 const usersRouter = Router();
 
 usersRouter.get("/", getAllUsersHandler);
 usersRouter.get("/:id", getOneUserHandler);
-usersRouter.post("/", validateUserData, verifyToken, authorizeAdmin, createUserHandler); //se agrega middleware "verifyToken, authorizeAdmin"
-usersRouter.put("/:id",verifyToken, authorizeAdmin, updateUserHandler);//se agrega middleware "verifyToken, authorizeAdmin"
-usersRouter.delete("/:id", verifyToken, authorizeAdmin, deleteUserHandler); //se agrega middleware "verifyToken, authorizeAdmin"
+usersRouter.post("/", verifyToken, authorizeAdmin, createUserHandler);
+usersRouter.put("/:id",verifyToken, authorizeAdmin, updateUserHandler);
+usersRouter.delete("/:id", verifyToken, authorizeAdmin, deleteUserHandler); 
 
 module.exports = usersRouter;

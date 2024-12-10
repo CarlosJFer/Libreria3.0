@@ -1,11 +1,14 @@
 const { Router } = require("express");
 const usersRouter = require("./userRoutes");
 const productsRouter = require("./productsRoutes");
-const employersRouter = require("./employersRoutes");
+const employeesRouter = require("./employeesRoutes");
 const receiptsRouter = require("./receiptRoutes");
 const ordersRouter = require("./orderRoutes");
+const authRoutes = require("./authRoutes");
 const mainRouter = Router();
 
+//Auth
+mainRouter.use('/auth', authRoutes);
 // Users
 mainRouter.use("/users", usersRouter);
 // Products
@@ -14,7 +17,7 @@ mainRouter.use("/products", productsRouter);
 mainRouter.use("/order", ordersRouter);
 // Receipt
 mainRouter.use("/receipt", receiptsRouter);
-// Employers
-mainRouter.use("/employers", employersRouter);
+// Employees
+mainRouter.use("/employees", employeesRouter);
 
 module.exports = mainRouter;

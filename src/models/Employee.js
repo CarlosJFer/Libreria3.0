@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Esquema para Employee
 const employeeSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -25,7 +24,6 @@ const employeeSchema = new mongoose.Schema({
   },
 });
 
-// Modelo
 const Employee = mongoose.model("Employee", employeeSchema);
 
 module.exports = Employee;

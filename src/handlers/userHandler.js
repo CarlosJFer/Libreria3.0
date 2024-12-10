@@ -6,28 +6,13 @@ const { createUserController,
     deleteUserController } = require("../controllers/userController");
 const Joi = require('joi');
 
-// const userSchema = Joi.object({
-//     name: Joi.string().min(3).required(),
-//     username: Joi.string().min(3).required(),
-//     email: Joi.string().min(5).required().email(),
-// })
 const userSchema = Joi.object({
     name: Joi.string().min(3).required(),
     username: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
     password: Joi.string().pattern(/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/). required(),
-    role: Joi.string().valid( 'admin', 'user').required(),
-  });
-
-
-const validateUserData = (req, res, next) => {
-    const { error } = userSchema.validate(req.body);
-    if (error) { 
-        return res.status(400).send(`Error de validación: ${error.details[0].message}`); //Centralizar el error
-    }
-    next();
-};
-
+    role: Joi.string().valid( 'admin', 'user', 'support').required(),
+});
 
 const getAllUsersHandler = async (req, res) => {
     try {
@@ -77,8 +62,8 @@ const createUserHandler = async (req, res) => {
             return res.status(400).send(error.details[0].message);
         }
 
-        const { name, username, email } = req.body;
-        const response = await createUserController(name, username, email,password, role);//Se añade pasword y role
+        const { name, username, email, password, role } = req.body;
+        const response = await createUserController(name, username, email,password, role);
         res.status(201).send(response);
     } catch (error) {
         console.error("Error al crear el usuario:", error);
@@ -99,7 +84,6 @@ const updateUserHandler = async (req, res) => {
     }
 };
 
-
 const deleteUserHandler = async (req, res) => {
     try {
         const { id } = req.params;
@@ -112,7 +96,6 @@ const deleteUserHandler = async (req, res) => {
 };
 
 module.exports = {
-    validateUserData,
     getAllUsersHandler,
     getOneUserHandler,
     createUserHandler,

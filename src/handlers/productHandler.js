@@ -45,6 +45,8 @@ const createProductHandler = async (req, res) => {
       descripcion,
       imgPortada,
       precio,
+      urlLibro, // Parámetro nuevo para la URL del libro
+      downloadUrl
     } = req.body;
     const response = await createProductController(
       ISBN,
@@ -54,7 +56,9 @@ const createProductHandler = async (req, res) => {
       genero,
       descripcion,
       imgPortada,
-      precio
+      precio,
+      urlLibro, // Parámetro nuevo para la URL del libro
+      downloadUrl
     );
     res.send(response);
   } catch (error) {

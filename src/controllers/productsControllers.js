@@ -8,7 +8,9 @@ const createProductController = async (
   genero,
   descripcion,
   imgPortada,
-  precio
+  precio,
+  urlLibro, // Parámetro nuevo para la URL del libro
+  downloadUrl
 ) => {
   const newProduct = Product.create({
     ISBN,
@@ -19,6 +21,8 @@ const createProductController = async (
     descripcion,
     imgPortada,
     precio,
+    urlLibro, // Campo nuevo para la URL del libro
+    downloadUrl
   });
   return newProduct;
 };

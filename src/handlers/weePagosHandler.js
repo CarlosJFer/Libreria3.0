@@ -1,4 +1,3 @@
-// src/handlers/weePagosHandler.js
 const { createPaymentRequest, checkPaymentStatus } = require('../controllers/weePagosController');
 
 const createPaymentRequestHandler = async (req, res) => {
@@ -19,21 +18,21 @@ const createPaymentRequestHandler = async (req, res) => {
         };
         
         const response = await createPaymentRequest(paymentData);
-        res.json(response);
+        res.status(200).json(response);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ Error: error.message });
+        res.status(500).send({ error: 'Error al crear la solicitud de pago. Por favor, revisa los datos e intenta de nuevo.' });
     }
 };
 
 const checkPaymentStatusHandler = async (req, res) => {
     try {
-        const { uuid } = req.body; // Asegúrate de enviar el uuid en el cuerpo de la solicitud
+        const { uuid } = req.body;
         const response = await checkPaymentStatus(uuid);
-        res.json(response);
+        res.status(200).json(response);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ Error: error.message });
+        res.status(500).send({ error: 'Error al consultar el estado del pago. Por favor, revisa los datos e intenta de nuevo.' });
     }
 };
 

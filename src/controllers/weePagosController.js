@@ -1,8 +1,7 @@
-// src/controllers/weePagosController.js
 const axios = require('axios');
 
 const weePagosClient = axios.create({
-    baseURL: 'https://sb-wee.ar/v1/', // Asegúrate de que esta sea la URL correcta
+    baseURL: 'https://sb-wee.ar/v1/', 
     headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.WEE_API_KEY}`,

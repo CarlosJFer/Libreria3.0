@@ -3,10 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const registerController = async ( name, username, email, password, role = 'user' ) => {
-  // const userExists = users.some((user) => user.email === email);
-  // if (userExists) {
-  //   throw new Error("Usuario ya registrado");
-  // }
+  
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User ({ name, username, email, password: hashedPassword, role });
   newUser.save();

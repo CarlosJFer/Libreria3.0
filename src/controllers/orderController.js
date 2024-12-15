@@ -1,9 +1,10 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
-const createOrderController = async (fecha, estado, metodoPago, items) => {
+const createOrderController = async (userId, fecha, estado, metodoPago, items) => {
   const mongoose = require('mongoose');
   let total = 0;
+  const downloadUrls = [];
 
   if (!items || !Array.isArray(items)) {
     throw new Error('Los items no son válidos');
@@ -14,8 +15,6 @@ const createOrderController = async (fecha, estado, metodoPago, items) => {
       throw new Error('El producto no tiene un ID definido o falta cantidad');
     }
 
-    console.log('Item:', item);
-
     const productId = new mongoose.Types.ObjectId(item.productId);
     const product = await Product.findById(productId);
     if (!product) {
@@ -25,31 +24,27 @@ const createOrderController = async (fecha, estado, metodoPago, items) => {
     const itemPrice = parseFloat(product.precio.toString()) * item.cantidad;
     item.precio = itemPrice.toFixed(2);
     total += itemPrice;
+
+    if (product.downloadUrl) {
+      downloadUrls.push(product.downloadUrl);
+    } else {
+      console.warn(`El producto con id ${item.productId} no tiene una URL de descarga`);
+    }
   }
 
-  const firstProduct = await Product.findById(items[0].productId);
-  const downloadUrl = firstProduct ? firstProduct.downloadUrl : '';
-
   const newOrderData = {
+    userId,
     fecha,
     estado,
     metodoPago,
     items,
     total: total.toFixed(2),
-    downloadUrl,
+    downloadUrls, // Aquí debería estar la lista de URLs de descarga
   };
-
-  console.log('New Order Data:', newOrderData);
-  console.log('Order:', Order);
-  console.log('Order.create:', typeof Order.create);
-
-  if (typeof Order.create !== 'function') {
-    throw new Error('Order.create no está definido como una función');
-  }
 
   try {
     const newOrder = await Order.create(newOrderData);
-    console.log('Nueva orden creada:', newOrder);
+    console.log('Nueva orden creada:', newOrder); // Verificar que la orden se crea correctamente
     return newOrder;
   } catch (error) {
     console.error('Error al crear la orden:', error);

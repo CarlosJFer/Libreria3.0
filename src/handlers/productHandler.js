@@ -45,9 +45,13 @@ const createProductHandler = async (req, res) => {
       descripcion,
       imgPortada,
       precio,
-      urlLibro, // Parámetro nuevo para la URL del libro
+      urlLibro,
       downloadUrl
     } = req.body;
+
+    // Añade registros de consola
+    console.log("Datos recibidos para crear producto:", req.body);
+
     const response = await createProductController(
       ISBN,
       titulo,
@@ -57,14 +61,16 @@ const createProductHandler = async (req, res) => {
       descripcion,
       imgPortada,
       precio,
-      urlLibro, // Parámetro nuevo para la URL del libro
+      urlLibro,
       downloadUrl
     );
     res.send(response);
   } catch (error) {
+    console.error("Error al crear el producto:", error);
     res.status(500).send({ Error: error.message });
   }
 };
+
 
 const updateProductHandler = async (req, res) => {
   try {

@@ -11,6 +11,11 @@ const itemSchema = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   fecha: { type: Date },
   estado: {
     type: String,
@@ -24,7 +29,7 @@ const orderSchema = new mongoose.Schema({
   },
   items: { type: [itemSchema], required: true },
   total: { type: mongoose.Schema.Types.Decimal128 },
-  downloadUrl: { type: String },
+  downloadUrls: { type: [String] }, // Asegúrate de que downloadUrls sea una lista de strings
 });
 
 // Verifica si el modelo ya ha sido registrado

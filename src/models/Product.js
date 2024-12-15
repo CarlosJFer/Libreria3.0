@@ -1,7 +1,6 @@
-const { string, required } = require("joi");
 const mongoose = require("mongoose");
 
-const productShema = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
   ISBN: {
     type: String,
     required: true,
@@ -13,10 +12,11 @@ const productShema = new mongoose.Schema({
   descripcion: { type: String },
   imgPortada: { type: String },
   precio: { type: Number, required: true },
-  urlLibro: { type: String, required: true }, // Campo nuevo para la URL del libro
-  downloadUrl: { type: String }
+  urlLibro: { type: String, required: true }, // Asegúrate de que sea requerido
+  downloadUrl: { type: String } // Campo para la URL de descarga
 });
 
-const Product = mongoose.model("Product", productShema);
+const Product = mongoose.model("Product", productSchema);
 
 module.exports = Product;
+

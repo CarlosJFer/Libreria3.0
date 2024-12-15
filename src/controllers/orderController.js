@@ -1,34 +1,55 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
-const createOrderController = async (fecha, estado, metodoPago, items) => {
+const createOrderController = async (userId, fecha, estado, metodoPago, items) => {
+  const mongoose = require('mongoose');
   let total = 0;
+  const downloadUrls = [];
 
-  // Iterar sobre los ítems para calcular precios y validar existencia
-  for (const item of items) {
-    const product = await Product.findById(item.productId); // Buscar el producto en la base de datos
-    if (!product) {
-      throw new Error(
-        `El producto con id ${item.productId} no existe en la base de datos`
-      );
-    }
-
-    // Calcula el precio total del ítem: cantidad * precio del producto
-    const itemPrice = parseFloat(product.precio.toString()) * item.cantidad;
-    item.precio = itemPrice.toFixed(2); // Actualiza el precio del ítem
-    total += itemPrice; // Acumula el total de la orden
+  if (!items || !Array.isArray(items)) {
+    throw new Error('Los items no son válidos');
   }
 
-  // Crear la nueva orden con los precios calculados
-  const newOrder = await Order.create({
-    fecha: new Date(),
+  for (const item of items) {
+    if (!item.productId || !item.cantidad) {
+      throw new Error('El producto no tiene un ID definido o falta cantidad');
+    }
+
+    const productId = new mongoose.Types.ObjectId(item.productId);
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new Error(`El producto con id ${item.productId} no existe en la base de datos`);
+    }
+
+    const itemPrice = parseFloat(product.precio.toString()) * item.cantidad;
+    item.precio = itemPrice.toFixed(2);
+    total += itemPrice;
+
+    if (product.downloadUrl) {
+      downloadUrls.push(product.downloadUrl);
+    } else {
+      console.warn(`El producto con id ${item.productId} no tiene una URL de descarga`);
+    }
+  }
+
+  const newOrderData = {
+    userId,
+    fecha,
     estado,
     metodoPago,
     items,
-    total: total.toFixed(2), // Total calculado
-  });
+    total: total.toFixed(2),
+    downloadUrls, // Aquí debería estar la lista de URLs de descarga
+  };
 
-  return newOrder;
+  try {
+    const newOrder = await Order.create(newOrderData);
+    console.log('Nueva orden creada:', newOrder); // Verificar que la orden se crea correctamente
+    return newOrder;
+  } catch (error) {
+    console.error('Error al crear la orden:', error);
+    throw error;
+  }
 };
 
 const getAllOrdersController = async () => {

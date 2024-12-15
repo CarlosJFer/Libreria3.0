@@ -11,6 +11,11 @@ const itemSchema = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   fecha: { type: Date },
   estado: {
     type: String,
@@ -24,8 +29,10 @@ const orderSchema = new mongoose.Schema({
   },
   items: { type: [itemSchema], required: true },
   total: { type: mongoose.Schema.Types.Decimal128 },
+  downloadUrls: { type: [String] }, // Asegúrate de que downloadUrls sea una lista de strings
 });
 
-const Order = mongoose.model("Order", orderSchema);
+// Verifica si el modelo ya ha sido registrado
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
 
 module.exports = Order;

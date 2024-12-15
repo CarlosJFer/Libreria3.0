@@ -1,42 +1,123 @@
-const express = require('express');
-const morgan = require('morgan');
+const express = require("express");
+const path = require("path");
+require("dotenv").config();
+const morgan = require("morgan");
+const cors = require("cors");
+const mongoose = require("mongoose");
+
+const { MercadoPagoConfig, Preference } = require("mercadopago");
+const client = new MercadoPagoConfig({
+accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
+});
+const Order = require("./models/Order");
+const { createOrderController } = require("./controllers/orderController");
 const mainRouter = require("./routes/main");
-require('dotenv').config();
-
-// SDK de Mercado Pago
-const { MercadoPagoConfig } = require('mercadopago');
-
-const mercadoPagoClient = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN });
+const verifyToken = require("./middleware/verifyMiddleware");
 
 const app = express();
 
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(morgan("dev"));
-app.use('/api', mainRouter);
+app.use(cors());
+app.use("/api", mainRouter);
 
-app.post('/create_preference', async (req, res) => {
-    try {
-        const body = {
-            items: req.body.map((item) => ({
-                title: item.title,
-                quantity: Number(item.quantity),
-                currency_id: 'ARS',
-                unit_price: Number(item.price),
-            })),
-            back_urls: {
-                success: '', //Falta la direccion url
-                failure: '', //Falta la direccion url
-                pending: '', //Falta la direccion url
-            },
-            auto_return: "approved",
-        };
-        const preference = new Preference(mercadoPagoClient);
-        const result = await preference.create({ body });
-        res.json({ id: result.id, });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Error creating preference");
-    }
+const staticPath = path.join(__dirname, "..", "..", "client", "public");
+console.log("Serving static files from:", staticPath);
+app.use(express.static(staticPath));
+
+app.get("/success", (req, res) => {
+res.sendFile(path.join(staticPath, "success", "index.html"));
 });
+
+app.get("/failure", (req, res) => {
+res.sendFile(path.join(staticPath, "failure", "index.html"));
+});
+
+app.get("/pending", (req, res) => {
+res.sendFile(path.join(staticPath, "pending", "index.html"));
+});
+
+// Endpoint para crear una preferencia de pago
+app.post("/create_preference", verifyToken, async (req, res) => {
+const { items, metodoPago } = req.body;
+const userId = req.user._id;
+
+  console.log("User ID:", userId); // Verifica que el userId se esté pasando correctamente
+
+try {
+    const order = await createOrderController(
+    userId,
+    new Date(),
+    "Pendiente",
+    metodoPago,
+    items
+    );
+    const orderId = order._id;
+
+    const body = {
+    items: items.map((item) => ({
+        title: item.title,
+        quantity: Number(item.cantidad),
+        currency_id: "ARS",
+        unit_price: Number(item.precio),
+    })),
+    back_urls: {
+        success: `http://localhost:3000/success?orderId=${orderId}`,
+        failure: "http://localhost:3000/failure",
+        pending: "http://localhost:3000/pending",
+    },
+    auto_return: "approved",
+    };
+
+    const preferences = new Preference(client);
+    const preference = await preferences.create({ body });
+
+    if (preference && preference.id) {
+    res.json({ id: preference.id, init_point: preference.init_point });
+    } else {
+    console.error("Respuesta inesperada de Mercado Pago:", preference);
+    res.status(500).send({ error: "Error al crear la preferencia de pago." });
+    }
+} catch (error) {
+    console.error("Error en create_preference:", error);
+    res.status(500).send({ error: error.message });
+}
+});
+
+app.post("/webhook", async (req, res) => {
+console.log("Notificación recibida:", req.body);
+const notification = req.body;
+
+if (notification.type === "payment") {
+    // Lógica para manejar las notificaciones de pago
+}
+
+res.status(200).send();
+});
+
+app.get('/api/orders/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+  
+    try {
+      const order = await Order.findById(orderId);
+  
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+      console.log("Order details:", order); // Verificar datos de la orden
+      res.json({
+        fecha: order.fecha,
+        monto: order.total,
+        metodoPago: order.metodoPago,
+        downloadUrls: order.downloadUrls // Devolver la lista de URLs de descarga
+      });
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+  
 
 module.exports = app;

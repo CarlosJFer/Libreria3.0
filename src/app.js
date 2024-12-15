@@ -57,9 +57,9 @@ app.post("/create_preference", async (req, res) => {
         unit_price: Number(item.precio),
       })),
       back_urls: {
-        success: `http://localhost:3001/success?orderId=${orderId}`,
-        failure: "http://localhost:3001/failure",
-        pending: "http://localhost:3001/pending",
+        success: `http://localhost:3000/success?orderId=${orderId}`,
+        failure: "http://localhost:3000/failure",
+        pending: "http://localhost:3000/pending",
       },
       auto_return: "approved",
     };

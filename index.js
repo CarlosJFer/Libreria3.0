@@ -2,7 +2,7 @@ const app = require("./src/app");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // Configuración de conexión a MongoDB
 const dbUri = process.env.MONGO_URL;

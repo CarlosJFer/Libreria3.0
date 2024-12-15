@@ -2,10 +2,23 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
 const createUserController = async (name, username, email, password, role) => {
-const hashedPassword = await bcrypt.hash(password, 10);
-const newUser = new User ({ name, username, email, password: hashedPassword, role });
-newUser.save();
-return newUser;
+try {
+    // Verificar si el usuario o el email ya existen en la base de datos
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+    throw new Error('El nombre de usuario o el email ya están en uso');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ name, username, email, password: hashedPassword, role });
+    await newUser.save();
+    return newUser;
+} catch (error) {
+    if (error.code === 11000) {
+    throw new Error('El nombre de usuario o el email ya están en uso');
+    }
+    throw error;  // Relanzar cualquier otro error que ocurra
+}
 };
 
 const getAllUsersController = async () => {

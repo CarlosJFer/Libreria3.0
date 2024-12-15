@@ -5,6 +5,7 @@ const employeesRouter = require("./employeesRoutes");
 const receiptsRouter = require("./receiptRoutes");
 const ordersRouter = require("./orderRoutes");
 const authRoutes = require("./authRoutes");
+const weePagosRouter = require("./weePagosRoutes");
 const mainRouter = Router();
 
 //Auth
@@ -19,5 +20,7 @@ mainRouter.use("/order", ordersRouter);
 mainRouter.use("/receipt", receiptsRouter);
 // Employees
 mainRouter.use("/employees", employeesRouter);
+// WeePagos
+mainRouter.use("/wee", weePagosRouter);
 
 module.exports = mainRouter;

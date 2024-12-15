@@ -24,8 +24,10 @@ const orderSchema = new mongoose.Schema({
   },
   items: { type: [itemSchema], required: true },
   total: { type: mongoose.Schema.Types.Decimal128 },
+  downloadUrl: { type: String },
 });
 
-const Order = mongoose.model("Order", orderSchema);
+// Verifica si el modelo ya ha sido registrado
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
 
 module.exports = Order;

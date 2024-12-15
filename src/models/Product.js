@@ -13,6 +13,8 @@ const productShema = new mongoose.Schema({
   descripcion: { type: String },
   imgPortada: { type: String },
   precio: { type: Number, required: true },
+  urlLibro: { type: String, required: true }, // Campo nuevo para la URL del libro
+  downloadUrl: { type: String }
 });
 
 const Product = mongoose.model("Product", productShema);

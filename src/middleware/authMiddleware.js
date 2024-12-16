@@ -7,4 +7,3 @@ const authorizeAdmin = (req, res, next) => {
   };
   
   module.exports = authorizeAdmin;
-  

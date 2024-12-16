@@ -23,7 +23,6 @@ app.use(cors());
 app.use("/api", mainRouter);
 
 const staticPath = path.join(__dirname, "..", "..", "client", "public");
-console.log("Serving static files from:", staticPath);
 app.use(express.static(staticPath));
 
 app.get("/success", (req, res) => {

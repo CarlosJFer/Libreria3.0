@@ -1,9 +1,9 @@
-const express = require("express");
-const path = require("path");
-require("dotenv").config();
-const morgan = require("morgan");
-const cors = require("cors");
-const mongoose = require("mongoose");
+const express = require('express');
+const path = require('path');
+require('dotenv').config();
+const morgan = require('morgan');
+const cors = require('cors');
+const mongoose = require('mongoose');
 
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 const client = new MercadoPagoConfig({
@@ -20,44 +20,45 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors({
-origin: 'https://libreria3-0.onrender.com',
-methods: ['GET', 'POST', 'PUT', 'DELETE'],
-allowedHeaders: ['Authorization', 'Content-Type'],
-credentials: true
+    origin: 'https://libreria3-0.onrender.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
+    credentials: true
 }));
-app.use("/api", mainRouter);
 
-const staticPath = path.join(__dirname, "..", "..", "client", "public");
-app.use(express.static(staticPath));
+// Configurar el middleware para servir archivos estáticos
+app.use(express.static(path.join(__dirname, '..', '..', 'client', 'public')));
 
-app.get("/success", (req, res) => {
-    res.sendFile(path.join(staticPath, "success", "index.html"));
+app.use('/api', mainRouter);
+
+app.get('/success', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'success', 'index.html'));
 });
 
-app.get("/failure", (req, res) => {
-    res.sendFile(path.join(staticPath, "failure", "index.html"));
+app.get('/failure', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'failure', 'index.html'));
 });
 
-app.get("/pending", (req, res) => {
-    res.sendFile(path.join(staticPath, "pending", "index.html"));
+app.get('/pending', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'pending', 'index.html'));
 });
 
 // Endpoint para crear una preferencia de pago
-app.post("/create_preference", verifyToken, async (req, res) => {
+app.post('/create_preference', verifyToken, async (req, res) => {
     console.log('Solicitud recibida:', req.body);
-    const token = req.header("Authorization") && req.header("Authorization").split(" ")[1];
-    console.log("Token recibido en la solicitud:", token);
+    const token = req.header('Authorization') && req.header('Authorization').split(' ')[1];
+    console.log('Token recibido en la solicitud:', token);
 
     const { items, metodoPago } = req.body;
     const userId = req.user._id;
 
-    console.log("User ID:", userId); // Verifica que el userId se esté pasando correctamente
+    console.log('User ID:', userId); // Verifica que el userId se esté pasando correctamente
 
     try {
         const order = await createOrderController(
             userId,
             new Date(),
-            "Pendiente",
+            'Pendiente',
             metodoPago,
             items
         );
@@ -67,15 +68,15 @@ app.post("/create_preference", verifyToken, async (req, res) => {
             items: items.map((item) => ({
                 title: item.title,
                 quantity: Number(item.cantidad),
-                currency_id: "ARS",
+                currency_id: 'ARS',
                 unit_price: Number(item.precio),
             })),
             back_urls: {
                 success: `https://libreria3-0.onrender.com/success?orderId=${orderId}`, // Incluyendo orderId
-                failure: "https://libreria3-0.onrender.com/failure",
-                pending: "https://libreria3-0.onrender.com/pending",
+                failure: 'https://libreria3-0.onrender.com/failure',
+                pending: 'https://libreria3-0.onrender.com/pending',
             },
-            auto_return: "approved",
+            auto_return: 'approved',
         };
 
         const preferences = new Preference(client);
@@ -84,20 +85,20 @@ app.post("/create_preference", verifyToken, async (req, res) => {
         if (preference && preference.id) {
             res.json({ id: preference.id, init_point: preference.init_point });
         } else {
-            console.error("Respuesta inesperada de Mercado Pago:", preference);
-            res.status(500).send({ error: "Error al crear la preferencia de pago." });
+            console.error('Respuesta inesperada de Mercado Pago:', preference);
+            res.status(500).send({ error: 'Error al crear la preferencia de pago.' });
         }
     } catch (error) {
-        console.error("Error en create_preference:", error);
+        console.error('Error en create_preference:', error);
         res.status(500).send({ error: error.message });
     }
 });
 
-app.post("/webhook", async (req, res) => {
-    console.log("Notificación recibida:", req.body);
+app.post('/webhook', async (req, res) => {
+    console.log('Notificación recibida:', req.body);
     const notification = req.body;
 
-    if (notification.type === "payment") {
+    if (notification.type === 'payment') {
         // Lógica para manejar las notificaciones de pago
     }
 
@@ -114,7 +115,7 @@ app.get('/api/orders/:orderId', async (req, res) => {
             return res.status(404).json({ error: 'Order not found' });
         }
 
-        console.log("Order details:", order); // Verificar datos de la orden
+        console.log('Order details:', order); // Verificar datos de la orden
         res.json({
             fecha: order.fecha,
             monto: order.total,

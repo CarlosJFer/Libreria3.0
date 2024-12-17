@@ -26,6 +26,19 @@ app.use(cors({
     credentials: true
 }));
 
+// Middleware para configurar tipo MIME manualmente (opcional)
+const mime = require('mime');
+app.use((req, res, next) => {
+    const type = mime.getType(req.path);
+    if (type) {
+        res.type(type);
+    }
+    next();
+});
+
+// Configurar archivos estáticos
+app.use('/success', express.static(path.join(__dirname, '..', 'client', 'public', 'success')));
+
 // Configurar el middleware para servir archivos estáticos
 app.use(express.static(path.join(__dirname, '..', 'client', 'public', 'success')));
 

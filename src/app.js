@@ -27,20 +27,22 @@ app.use(cors({
 }));
 
 // Configurar archivos estáticos
-app.use(express.static(path.join(__dirname, '..', 'client', 'public')));
+app.use(express.static(path.join(__dirname, '..', '..', 'client', 'public')));
 
+// Rutas API
 app.use('/api', mainRouter);
 
+// Rutas para páginas de éxito, fallo y pendiente
 app.get('/success', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'client', 'public', 'success', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'success', 'index.html'));
 });
 
 app.get('/failure', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'client', 'public', 'failure', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'failure', 'index.html'));
 });
 
 app.get('/pending', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'client', 'public', 'pending', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'pending', 'index.html'));
 });
 
 // Endpoint para crear una preferencia de pago

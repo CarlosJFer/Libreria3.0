@@ -27,7 +27,7 @@ app.use(cors({
 }));
 
 // Configurar el middleware para servir archivos estáticos
-app.use(express.static(path.join(__dirname, '..', 'client', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'client', 'public', 'success')));
 
 app.use('/api', mainRouter);
 

@@ -71,7 +71,7 @@ app.post("/create_preference", verifyToken, async (req, res) => {
                 unit_price: Number(item.precio),
             })),
             back_urls: {
-                success: `https://libreria3-0-back.onrender.com/api/orders/${orderId}`,
+                success: `https://libreria3-0.onrender.com/success?orderId=${orderId}`, // Incluyendo orderId
                 failure: "https://libreria3-0.onrender.com/failure",
                 pending: "https://libreria3-0.onrender.com/pending",
             },

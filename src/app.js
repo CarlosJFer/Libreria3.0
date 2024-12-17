@@ -26,10 +26,9 @@ app.use(cors({
     credentials: true
 }));
 
-// Configurar archivos estáticos para todo el cliente
+// Configurar archivos estáticos
 app.use(express.static(path.join(__dirname, '..', 'client', 'public')));
 
-// Rutas específicas
 app.use('/api', mainRouter);
 
 app.get('/success', (req, res) => {

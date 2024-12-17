@@ -20,10 +20,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors({
-  origin: 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Authorization', 'Content-Type'],
-  credentials: true
+origin: 'https://libreria3-0.onrender.com',
+methods: ['GET', 'POST', 'PUT', 'DELETE'],
+allowedHeaders: ['Authorization', 'Content-Type'],
+credentials: true
 }));
 app.use("/api", mainRouter);
 
@@ -71,9 +71,9 @@ app.post("/create_preference", verifyToken, async (req, res) => {
                 unit_price: Number(item.precio),
             })),
             back_urls: {
-                success: `http://localhost:3000/success?orderId=${orderId}`,
-                failure: "http://localhost:3000/failure",
-                pending: "http://localhost:3000/pending",
+                success: `https://libreria3-0-back.onrender.com/api/orders/${orderId}`,
+                failure: "https://libreria3-0.onrender.com/failure",
+                pending: "https://libreria3-0.onrender.com/pending",
             },
             auto_return: "approved",
         };

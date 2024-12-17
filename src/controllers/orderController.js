@@ -39,12 +39,12 @@ const createOrderController = async (userId, fecha, estado, metodoPago, items) =
     metodoPago,
     items,
     total: total.toFixed(2),
-    downloadUrls, // Aquí debería estar la lista de URLs de descarga
+    downloadUrls,
   };
 
   try {
     const newOrder = await Order.create(newOrderData);
-    console.log('Nueva orden creada:', newOrder); // Verificar que la orden se crea correctamente
+    console.log('Nueva orden creada:', newOrder);
     return newOrder;
   } catch (error) {
     console.error('Error al crear la orden:', error);

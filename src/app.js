@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 const client = new MercadoPagoConfig({
-accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
+    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
 });
 const Order = require("./models/Order");
 const { createOrderController } = require("./controllers/orderController");
@@ -19,104 +19,112 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(morgan("dev"));
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Authorization', 'Content-Type'],
+  credentials: true
+}));
 app.use("/api", mainRouter);
 
 const staticPath = path.join(__dirname, "..", "..", "client", "public");
 app.use(express.static(staticPath));
 
 app.get("/success", (req, res) => {
-res.sendFile(path.join(staticPath, "success", "index.html"));
+    res.sendFile(path.join(staticPath, "success", "index.html"));
 });
 
 app.get("/failure", (req, res) => {
-res.sendFile(path.join(staticPath, "failure", "index.html"));
+    res.sendFile(path.join(staticPath, "failure", "index.html"));
 });
 
 app.get("/pending", (req, res) => {
-res.sendFile(path.join(staticPath, "pending", "index.html"));
+    res.sendFile(path.join(staticPath, "pending", "index.html"));
 });
 
 // Endpoint para crear una preferencia de pago
 app.post("/create_preference", verifyToken, async (req, res) => {
-const { items, metodoPago } = req.body;
-const userId = req.user._id;
+    console.log('Solicitud recibida:', req.body);
+    const token = req.header("Authorization") && req.header("Authorization").split(" ")[1];
+    console.log("Token recibido en la solicitud:", token);
 
-  console.log("User ID:", userId); // Verifica que el userId se esté pasando correctamente
+    const { items, metodoPago } = req.body;
+    const userId = req.user._id;
 
-try {
-    const order = await createOrderController(
-    userId,
-    new Date(),
-    "Pendiente",
-    metodoPago,
-    items
-    );
-    const orderId = order._id;
+    console.log("User ID:", userId); // Verifica que el userId se esté pasando correctamente
 
-    const body = {
-    items: items.map((item) => ({
-        title: item.title,
-        quantity: Number(item.cantidad),
-        currency_id: "ARS",
-        unit_price: Number(item.precio),
-    })),
-    back_urls: {
-        success: `http://localhost:3000/success?orderId=${orderId}`,
-        failure: "http://localhost:3000/failure",
-        pending: "http://localhost:3000/pending",
-    },
-    auto_return: "approved",
-    };
+    try {
+        const order = await createOrderController(
+            userId,
+            new Date(),
+            "Pendiente",
+            metodoPago,
+            items
+        );
+        const orderId = order._id;
 
-    const preferences = new Preference(client);
-    const preference = await preferences.create({ body });
+        const body = {
+            items: items.map((item) => ({
+                title: item.title,
+                quantity: Number(item.cantidad),
+                currency_id: "ARS",
+                unit_price: Number(item.precio),
+            })),
+            back_urls: {
+                success: `http://localhost:3000/success?orderId=${orderId}`,
+                failure: "http://localhost:3000/failure",
+                pending: "http://localhost:3000/pending",
+            },
+            auto_return: "approved",
+        };
 
-    if (preference && preference.id) {
-    res.json({ id: preference.id, init_point: preference.init_point });
-    } else {
-    console.error("Respuesta inesperada de Mercado Pago:", preference);
-    res.status(500).send({ error: "Error al crear la preferencia de pago." });
+        const preferences = new Preference(client);
+        const preference = await preferences.create({ body });
+
+        if (preference && preference.id) {
+            res.json({ id: preference.id, init_point: preference.init_point });
+        } else {
+            console.error("Respuesta inesperada de Mercado Pago:", preference);
+            res.status(500).send({ error: "Error al crear la preferencia de pago." });
+        }
+    } catch (error) {
+        console.error("Error en create_preference:", error);
+        res.status(500).send({ error: error.message });
     }
-} catch (error) {
-    console.error("Error en create_preference:", error);
-    res.status(500).send({ error: error.message });
-}
 });
 
 app.post("/webhook", async (req, res) => {
-console.log("Notificación recibida:", req.body);
-const notification = req.body;
+    console.log("Notificación recibida:", req.body);
+    const notification = req.body;
 
-if (notification.type === "payment") {
-    // Lógica para manejar las notificaciones de pago
-}
+    if (notification.type === "payment") {
+        // Lógica para manejar las notificaciones de pago
+    }
 
-res.status(200).send();
+    res.status(200).send();
 });
 
 app.get('/api/orders/:orderId', async (req, res) => {
     const { orderId } = req.params;
-  
+
     try {
-      const order = await Order.findById(orderId);
-  
-      if (!order) {
-        return res.status(404).json({ error: 'Order not found' });
-      }
-  
-      console.log("Order details:", order); // Verificar datos de la orden
-      res.json({
-        fecha: order.fecha,
-        monto: order.total,
-        metodoPago: order.metodoPago,
-        downloadUrls: order.downloadUrls // Devolver la lista de URLs de descarga
-      });
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        console.log("Order details:", order); // Verificar datos de la orden
+        res.json({
+            fecha: order.fecha,
+            monto: order.total,
+            metodoPago: order.metodoPago,
+            downloadUrls: order.downloadUrls // Devolver la lista de URLs de descarga
+        });
     } catch (error) {
-      console.error('Error fetching order:', error);
-      res.status(500).json({ error: 'Server error' });
+        console.error('Error fetching order:', error);
+        res.status(500).json({ error: 'Server error' });
     }
-  });
-  
+});
 
 module.exports = app;

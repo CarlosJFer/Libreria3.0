@@ -30,21 +30,40 @@ app.use(cors({
 // Configurar archivos estáticos
 const CLIENT_BUILD_PATH = path.join(__dirname, '..', '..', 'client', 'public');
 
-// Middleware para servir archivos estáticos
-app.use(express.static(CLIENT_BUILD_PATH));
+// Middleware para servir archivos estáticos con tipos MIME correctos
+app.use(express.static(CLIENT_PUBLIC_PATH, {
+    setHeaders: (res, filePath) => {
+        if (path.extname(filePath) === '.css') {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (path.extname(filePath) === '.js') {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    }
+}));
 
 // Rutas API
 app.use('/api', mainRouter);
 
 // Rutas para páginas de éxito, fallo y pendiente
 app.get('/success', (req, res) => {
-    res.sendFile(path.join(CLIENT_BUILD_PATH, 'success', 'index.html'), {
+    res.sendFile(path.join(CLIENT_PUBLIC_PATH, 'success', 'index.html'));
+});
+
+app.get('/success/styles.css', (req, res) => {
+    res.sendFile(path.join(CLIENT_PUBLIC_PATH, 'success', 'styles.css'), {
         headers: {
-            'Content-Type': 'text/html',
+            'Content-Type': 'text/css'
         }
     });
 });
 
+app.get('/success/script.js', (req, res) => {
+    res.sendFile(path.join(CLIENT_PUBLIC_PATH, 'success', 'script.js'), {
+        headers: {
+            'Content-Type': 'application/javascript'
+        }
+    });
+});
 app.get('/failure', (req, res) => {
     res.sendFile(path.join(CLIENT_BUILD_PATH, 'failure', 'index.html'), {
         headers: {
@@ -157,7 +176,7 @@ app.get('/api/orders/:orderId', async (req, res) => {
             fecha: order.fecha,
             monto: order.total,
             metodoPago: order.metodoPago,
-            downloadUrls: order.downloadUrls // Devolver la lista de URLs de descarga
+            downloadUrls: order.downloadUrls || [] 
         });
     } catch (error) {
         console.error('Error fetching order:', error);

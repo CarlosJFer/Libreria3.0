@@ -19,30 +19,63 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(morgan("dev"));
+
 app.use(cors({
-    origin: 'https://libreria3-0.onrender.com',
+    origin: ['https://libreria3-0.onrender.com', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true
 }));
 
 // Configurar archivos estáticos
-app.use(express.static(path.join(__dirname, '..', '..', 'client', 'public')));
+const CLIENT_BUILD_PATH = path.join(__dirname, '..', '..', 'client', 'public');
+
+// Middleware para servir archivos estáticos
+app.use(express.static(CLIENT_BUILD_PATH));
 
 // Rutas API
 app.use('/api', mainRouter);
 
 // Rutas para páginas de éxito, fallo y pendiente
 app.get('/success', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'success', 'index.html'));
+    res.sendFile(path.join(CLIENT_BUILD_PATH, 'success', 'index.html'), {
+        headers: {
+            'Content-Type': 'text/html',
+        }
+    });
 });
 
 app.get('/failure', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'failure', 'index.html'));
+    res.sendFile(path.join(CLIENT_BUILD_PATH, 'failure', 'index.html'), {
+        headers: {
+            'Content-Type': 'text/html',
+        }
+    });
 });
 
 app.get('/pending', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', '..', 'client', 'public', 'pending', 'index.html'));
+    res.sendFile(path.join(CLIENT_BUILD_PATH, 'pending', 'index.html'), {
+        headers: {
+            'Content-Type': 'text/html',
+        }
+    });
+});
+
+// manejadores de archivos estáticos específicos para success
+app.get('/styles.css', (req, res) => {
+    res.sendFile(path.join(CLIENT_BUILD_PATH, 'success', 'styles.css'), {
+        headers: {
+            'Content-Type': 'text/css',
+        }
+    });
+});
+
+app.get('/script.js', (req, res) => {
+    res.sendFile(path.join(CLIENT_BUILD_PATH, 'success', 'script.js'), {
+        headers: {
+            'Content-Type': 'application/javascript',
+        }
+    });
 });
 
 // Endpoint para crear una preferencia de pago
@@ -114,10 +147,12 @@ app.get('/api/orders/:orderId', async (req, res) => {
         const order = await Order.findById(orderId);
 
         if (!order) {
+            console.log('Order not found for ID:', orderId);
             return res.status(404).json({ error: 'Order not found' });
         }
+        console.log('Order found:', order);
+        console.log('Download URLs:', order.downloadUrls);
 
-        console.log('Order details:', order); // Verificar datos de la orden
         res.json({
             fecha: order.fecha,
             monto: order.total,

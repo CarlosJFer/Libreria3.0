@@ -28,7 +28,7 @@ app.use(cors({
 }));
 
 // Configurar archivos estáticos
-const CLIENT_BUILD_PATH = path.join(__dirname, '..', '..', 'client', 'public');
+const CLIENT_PUBLIC_PATH = process.env.CLIENT_PUBLIC_PATH || path.join(__dirname, 'public');
 
 // Middleware para servir archivos estáticos con tipos MIME correctos
 app.use(express.static(CLIENT_PUBLIC_PATH, {
